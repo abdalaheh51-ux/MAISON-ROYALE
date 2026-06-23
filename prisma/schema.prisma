@@ -1,0 +1,79 @@
+// Luxury Watch Customizer — Prisma schema
+// Dark-theme luxury watch store with interactive configurator + ERP inventory mini-system.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A base watch model the customer configures (e.g. "Chronograph Royale").
+model WatchModel {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  tagline     String
+  description String
+  basePrice   Int      // in USD cents
+  heroImage   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Each model links to the components compatible with it.
+  components  Component[]
+  orders      Order[]
+}
+
+// A customizable component (dial, strap, hands, case finish).
+// Stock drives the ERP mini-system: when stock hits 0 the option
+// is hidden from the configurator automatically.
+model Component {
+  id          String   @id @default(cuid())
+  category    String   // "dial" | "strap" | "hands" | "case"
+  name        String
+  // Visual config consumed by the SVG renderer:
+  // dial:    { color: "#hex", finish: "sunburst"|"matte"|"guilloche", accent: "#hex" }
+  // strap:   { type: "leather"|"metal"|"rubber", color: "#hex", stitch: "#hex" }
+  // hands:   { style: "dauphine"|"sword"|"baton"|"leaf", color: "#hex" }
+  // case:    { material: "steel"|"gold"|"rose-gold"|"black-steel", color: "#hex" }
+  config      String   // JSON string
+  priceDelta  Int      // added to base price, in USD cents (can be negative)
+  stock       Int      @default(0)
+  lowStockAt  Int      @default(5) // threshold for "low stock" warning
+  watchModelId String
+  watchModel  WatchModel @relation(fields: [watchModelId], references: [id], onDelete: Cascade)
+
+  orderItems  OrderItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([watchModelId, category])
+}
+
+// A saved/confirmed order. Creating one decrements component stock.
+model Order {
+  id          String   @id @default(cuid())
+  reference   String   @unique // human-readable, e.g. LWC-7F3K2
+  watchModelId String
+  watchModel  WatchModel @relation(fields: [watchModelId], references: [id])
+  customerName String?
+  totalCents  Int
+  status      String   @default("confirmed") // confirmed | building | shipped
+  createdAt   DateTime @default(now())
+
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id])
+  category    String
+  name        String
+  priceDelta  Int
+}
