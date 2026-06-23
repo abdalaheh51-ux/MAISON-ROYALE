@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import Logo from "@/components/Logo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   keywords: ["luxury watches", "custom watch", "chronograph", "haute horlogerie", "bespoke timepiece"],
   authors: [{ name: "Maison Royale" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/favicon.ico",
   },
   openGraph: {
     title: "Maison Royale — Luxury Watch Customizer",
