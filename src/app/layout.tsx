@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   keywords: ["luxury watches", "custom watch", "chronograph", "haute horlogerie", "bespoke timepiece"],
   authors: [{ name: "Maison Royale" }],
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
   },
   openGraph: {
     title: "Maison Royale — Luxury Watch Customizer",
