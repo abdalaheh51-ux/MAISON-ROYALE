@@ -7,10 +7,15 @@ interface LogoProps {
 export default function Logo({ className = "w-8 h-8" }: LogoProps) {
   return (
     <svg 
-      viewBox="0 0 30 30" 
-      className={className}
+      version="1.1"
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      viewBox="0 0 30 30"
+      style={{ enableBackground: "new 0 0 30 30" }}
+      xmlSpace="preserve"
+      className={className}
     >
       <defs>
         <style type="text/css">{`
