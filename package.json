@@ -58,7 +58,7 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
     "next": "^16.2.9",
-    "next-auth": "^3.29.10",
+    "next-auth": "beta",
     "next-intl": "^4.3.4",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
@@ -77,7 +77,8 @@
     "vaul": "^1.1.2",
     "z-ai-web-dev-sdk": "^0.0.18",
     "zod": "^4.0.2",
-    "zustand": "^5.0.6"
+    "zustand": "^5.0.6",
+    "next-auth": "beta"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -90,5 +91,8 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
     "typescript": "^5"
+  }
+, "prisma": {
+    "seed": "bun prisma/seed.ts"
   }
 }

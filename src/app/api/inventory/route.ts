@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import type { ComponentCategory, ComponentOption } from '@/lib/types'
 
@@ -40,6 +41,11 @@ export async function GET() {
 // PATCH /api/inventory — restock / adjust a single component's stock.
 // Body: { id: string, delta: number }  (delta may be negative to consume)
 export async function PATCH(req: NextRequest) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = await req.json().catch(() => null)
   if (!body || typeof body.id !== 'string' || typeof body.delta !== 'number') {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })

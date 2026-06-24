@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import Logo from "@/components/Logo.tsx/Logo";
 
@@ -55,8 +56,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cormorant.variable} antialiased bg-background text-foreground`}
       >
-        {children}
-        <Toaster />
+        <SessionProvider>
+          {children}
+          <Toaster />
+        </SessionProvider>
       </body>
     </html>
   );

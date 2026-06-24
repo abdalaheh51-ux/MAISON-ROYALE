@@ -13,6 +13,7 @@ import {
   DollarSign,
   AlertTriangle,
 } from 'lucide-react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatUSD } from '@/lib/format'
@@ -40,6 +41,8 @@ const CATEGORY_LABEL: Record<ComponentCategory, string> = {
 }
 
 export function ErpPanel({ onInventoryChanged }: { onInventoryChanged?: () => void }) {
+  const { data: session, status } = useSession()
+  const isAdmin = Boolean(session)
   const [data, setData] = useState<InventoryData | null>(null)
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState<string | null>(null)
@@ -162,9 +165,20 @@ export function ErpPanel({ onInventoryChanged }: { onInventoryChanged?: () => vo
               Live stock ledger · adjusting here re-opens options in the configurator
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={load} className="text-muted-foreground">
-            <RefreshCw className="h-3.5 w-3.5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={load} className="text-muted-foreground">
+              <RefreshCw className="h-3.5 w-3.5" />
+            </Button>
+            {isAdmin ? (
+              <Button size="sm" onClick={() => signOut()}>
+                Sign out
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => signIn(undefined, { callbackUrl: '/#erp' })}>
+                Admin login
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="max-h-[28rem] overflow-y-auto luxe-scroll">
@@ -235,37 +249,41 @@ export function ErpPanel({ onInventoryChanged }: { onInventoryChanged?: () => vo
                       {it.priceDelta === 0 ? '—' : `+${formatUSD(it.priceDelta)}`}
                     </td>
                     <td className="px-4 py-2.5">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-7 w-7 border-border"
-                          disabled={it.stock === 0 || busyId === it.id}
-                          onClick={() => adjust(it.id, -1, it.name)}
-                          aria-label={`Consume one ${it.name}`}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 border-border px-2 text-xs"
-                          disabled={busyId === it.id}
-                          onClick={() => adjust(it.id, 5, it.name)}
-                        >
-                          +5
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-7 w-7 border-border bg-primary/10 text-primary hover:bg-primary/20"
-                          disabled={busyId === it.id}
-                          onClick={() => adjust(it.id, 1, it.name)}
-                          aria-label={`Restock one ${it.name}`}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
+                      {isAdmin ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-7 w-7 border-border"
+                            disabled={it.stock === 0 || busyId === it.id}
+                            onClick={() => adjust(it.id, -1, it.name)}
+                            aria-label={`Consume one ${it.name}`}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 border-border px-2 text-xs"
+                            disabled={busyId === it.id}
+                            onClick={() => adjust(it.id, 5, it.name)}
+                          >
+                            +5
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-7 w-7 border-border bg-primary/10 text-primary hover:bg-primary/20"
+                            disabled={busyId === it.id}
+                            onClick={() => adjust(it.id, 1, it.name)}
+                            aria-label={`Restock one ${it.name}`}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">View only</span>
+                      )}
                     </td>
                   </tr>
                 )
