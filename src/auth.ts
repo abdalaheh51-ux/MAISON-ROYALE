@@ -5,8 +5,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: { password: { type: "password" } },
-      authorize({ password }) {
-        if (password === process.env.ADMIN_PASSWORD) {
+      async authorize(credentials) {
+        if (credentials?.password === process.env.ADMIN_PASSWORD) {
           return { id: "1", name: "Admin" }
         }
         return null
